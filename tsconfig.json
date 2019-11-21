@@ -12,6 +12,7 @@
     "strict": true,
     "target": "es6",
     "moduleResolution": "node",
+    "suppressImplicitAnyIndexErrors": true,
     "paths": {
       "@daos": [
         "src/daos"

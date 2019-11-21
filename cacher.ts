@@ -28,11 +28,12 @@ const suffixTransform = {
   "image/png": "png",
   "image/gif": "gif"
 };
-
-axios.defaults.headers["x-api-key"] = "90763e29-c851-4066-9dc7-97d223cf91f8";
+const catKey = "90763e29-c851-4066-9dc7-97d223cf91f8";
+const dogKey = "a126d0a4-37be-4c8d-bd8b-39049f5430d7";
+axios.defaults.headers["x-api-key"] = dogKey;
 axios.defaults.timeout = 30000;
 
-let page = 550;
+let page = 0;
 let imageDownloadErrorNumber = 0;
 let urlGettingErrorNumber = 0;
 
@@ -53,6 +54,7 @@ async function entry() {
         responseType: "arraybuffer"
       })
       .catch(error => {
+        console.log(error);
         console.log("获取链接报错总数: " + urlGettingErrorNumber++);
       });
     const headers = response.headers;
@@ -61,14 +63,15 @@ async function entry() {
     const suffix = suffixTransform[headers["content-type"]];
     console.log(`fetching image ${cat.id}.${suffix}`);
     const fileName = `${cat.id}.${suffix}`;
-    await writeImage(`./download/${fileName}`, data);
+    await writeImage(`./src/public/images/dog/${fileName}`, data);
     console.log(`write image ${fileName} success`);
   });
 }
 
 const id = setInterval(() => {
   entry();
-}, 20000);
+}, 40000);
+entry();
 
 async function getCats() {
   const config = {
@@ -81,7 +84,7 @@ async function getCats() {
     } as SearchParams
   };
   const response = await axios
-    .get("https://api.thecatapi.com/v1/images/search", config)
+    .get("https://api.thedogapi.com/v1/images/search", config)
     .catch(error => {
       console.log("获取图片报错总数: " + imageDownloadErrorNumber++);
     });
