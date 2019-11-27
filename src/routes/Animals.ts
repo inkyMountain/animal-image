@@ -36,9 +36,7 @@ router.get("/", (req: Request, res: Response) => {
   // 产生随机推荐
   const remainAnimal = remains[id][type];
   const recommends = [];
-  let isRemainEmpty = false;
-  // console.log("筛选前", "狗的长度", remains[id].dog.length);
-  // console.log("筛选前", "猫的长度", remains[id].cat.length);
+  let isRemainEmpty = true;
   while (recommends.length < limit && remainAnimal.length > 0) {
     const index = +(remainAnimal.length * Math.random()).toFixed(0);
     const recommend = `//${process.env.HOST}:${process.env.PORT}/images/${type}/${remainAnimal[index]}`;
@@ -46,10 +44,8 @@ router.get("/", (req: Request, res: Response) => {
     remainAnimal.splice(index, 1);
     isRemainEmpty = remainAnimal.length === 0;
   }
-  // console.log("筛选前", "狗的长度", remains[id].dog.length);
-  // console.log("筛选前", "猫的长度", remains[id].cat.length, "\n");
   return res.status(OK).json({
-    id: id,
+    id,
     urls: recommends,
     empty: isRemainEmpty
   });

@@ -36,6 +36,7 @@ axios.defaults.timeout = 30000;
 let page = 0;
 let imageDownloadErrorNumber = 0;
 let urlGettingErrorNumber = 0;
+let downloadedImageNumber = 0;
 
 async function writeImage(path: string, data: Buffer) {
   return new Promise((resolve, reject) => {
@@ -46,7 +47,7 @@ async function writeImage(path: string, data: Buffer) {
   });
 }
 
-async function entry() {
+async function catEntry() {
   const cats: Cats = await getCats();
   cats.forEach(async cat => {
     const response: any = await axios
@@ -67,11 +68,6 @@ async function entry() {
     console.log(`write image ${fileName} success`);
   });
 }
-
-const id = setInterval(() => {
-  entry();
-}, 40000);
-entry();
 
 async function getCats() {
   const config = {
@@ -97,3 +93,53 @@ async function getCats() {
   }
   return data;
 }
+
+async function getDogs() {
+  const IMAGE_NUMBER = 10;
+  const response = await axios
+    .get(`https://dog.ceo/api/breeds/image/random/${IMAGE_NUMBER}`)
+    .catch(error => {
+      console.log("获取图片报错总数: " + imageDownloadErrorNumber++);
+    });
+  const data = (response as any).data;
+  console.log("图片下载数量:", downloadedImageNumber);
+  if (downloadedImageNumber > 5000) {
+    console.log("图片全部下载完成~");
+    console.log("获取图片报错总数: " + imageDownloadErrorNumber++);
+    console.log("获取链接报错总数: " + urlGettingErrorNumber++);
+    process.exit(0);
+  }
+  return data.message;
+}
+
+async function dogEntry() {
+  const urls: string[] = await getDogs();
+  urls.forEach(async url => {
+    const response: any = await axios
+      .get(url, {
+        responseType: "arraybuffer"
+      })
+      .catch(error => {
+        console.log(error);
+        console.log("获取链接报错总数: " + urlGettingErrorNumber++);
+      });
+    response && downloadedImageNumber++;
+    const headers = response.headers;
+    const data = response.data;
+    console.log("suffix: ", headers["content-type"]);
+    const suffix = suffixTransform[headers["content-type"]];
+    const fileName = `${downloadedImageNumber}.${suffix}`;
+    await writeImage(`./src/public/images/dog/${fileName}`, data);
+    console.log(`write image ${fileName} success`);
+  });
+}
+
+const id = setInterval(() => {
+  dogEntry();
+}, 20000);
+dogEntry();
+
+// const id = setInterval(() => {
+//   catEntry();
+// }, 20000);
+// catEntry();
