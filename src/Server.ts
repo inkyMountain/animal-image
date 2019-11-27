@@ -17,7 +17,7 @@ const whiteList = [
 const corsOptions: CorsOptions = {
   origin: (origin: any, callback: Function) => {
     const isInWhiteList =
-      !origin || whiteList.some(url => origin.startsWith(url));
+      !origin || whiteList.some(url => origin.startsWith(url) || origin.endsWith(url));
     callback(null, isInWhiteList);
   },
   optionsSuccessStatus: 200
