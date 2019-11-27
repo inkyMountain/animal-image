@@ -10,7 +10,7 @@ const app = express();
 const whiteList = [
   "http://localhost",
   "http://172.31.11.117",
-  "http://chenyitao.cn",
+  "chenyitao.cn",
   "http://cat.chenyitao.cn",
   "http://118.25.185.172"
 ];
